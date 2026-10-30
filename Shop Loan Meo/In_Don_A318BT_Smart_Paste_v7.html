@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>In COD A318BT - Smart Paste v7</title>
+<style>
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#edf2f7;color:#17212b;margin:0}.app{max-width:1040px;margin:24px auto;padding:14px}h1{font-size:24px}.layout{display:grid;grid-template-columns:minmax(300px,1fr) minmax(300px,1fr);gap:18px}.panel{background:white;padding:18px;border-radius:12px}label{display:block;font-weight:bold;margin:12px 0 6px}input,textarea{width:100%;font:inherit;padding:10px;border:1px solid #b8c5d4;border-radius:6px}textarea{min-height:80px}#bulk{min-height:125px}button{background:#1768b5;color:white;border:0;border-radius:7px;padding:12px 16px;cursor:pointer;font-weight:bold;margin:10px 6px 0 0}.hint,#status{color:#526071;font-size:13px;line-height:1.5}.preview-wrap{overflow:auto;background:#e7e9eb;padding:12px}.label{width:76mm;height:130mm;background:white;color:black;padding:4mm;font-family:Arial,sans-serif;overflow:hidden}.heading{text-align:center;font-size:17pt;font-weight:900;border-bottom:2px solid black;padding-bottom:3mm;margin-bottom:4mm}.field{font-size:13pt;line-height:1.35;margin:2.5mm 0;overflow-wrap:anywhere}.address{white-space:pre-wrap}.cod{font-size:19pt;font-weight:900;border-top:2px solid black;margin-top:4mm;padding-top:3mm;overflow-wrap:anywhere}#printSheet{display:none}@media(max-width:760px){.layout{grid-template-columns:1fr}}
+/* Printing is isolated from the web application's layout. */
+@page{size:76mm 130mm;margin:0}
+@media print{
+ html,body{width:76mm!important;height:130mm!important;margin:0!important;padding:0!important;background:white!important;overflow:visible!important}
+ .app{display:none!important}
+ #printSheet{display:block!important;position:absolute!important;left:0!important;top:0!important;width:76mm!important;height:130mm!important;margin:0!important;padding:0!important;overflow:hidden!important}
+ #printSheet .label{display:block!important;width:76mm!important;height:130mm!important;padding:4mm!important;border:0!important;box-shadow:none!important;break-inside:avoid!important;page-break-inside:avoid!important}
+}
+
+@media screen{.system-help{background:#e9f6ed;border:1px solid #92c9a5;padding:12px;border-radius:9px;margin-top:14px;line-height:1.6}.system-help strong{color:#175b32}}
+@media print{.system-help{display:none!important}#printSheet{position:fixed!important;inset:0 auto auto 0!important;transform:none!important} }
+.share-panel{margin-top:0;border:1px solid #d7e0e8;border-radius:10px;padding:14px;background:#f7fafc}#customerMessage{min-height:85px;background:#f7fafc}.share-panel button{margin-top:8px}#imageStatus{margin-top:8px}
+/* v7: large, readable desktop workspace. Print sheet remains physically 76x130mm. */
+@media screen {
+ body{font-size:17px;background:#eef3f8}
+ .app{max-width:1540px;width:calc(100% - 28px);margin:10px auto;padding:10px}
+ h1{font-size:29px;margin:8px 0 6px}
+ .layout{grid-template-columns:minmax(380px,1fr) minmax(430px,1fr);gap:18px;align-items:start}
+ .panel{padding:20px;border:1px solid #d8e1ea;box-shadow:0 2px 12px rgba(20,40,70,.05)}
+ label{font-size:17px;margin:13px 0 7px}
+ input,textarea{font-size:18px;padding:13px;border-radius:8px;line-height:1.35}
+ input{min-height:50px}
+ #bulk{min-height:165px}
+ #address{min-height:100px}
+ button{font-size:16px;padding:13px 18px;min-height:48px}
+ .share-panel{padding:16px;background:#f5f9fd}
+ #customerMessage{font-size:18px;min-height:92px;background:white}
+ .hint,#status{font-size:14px}
+ .preview-wrap{padding:16px;display:flex;justify-content:center}
+ .preview-wrap .label{flex:none}
+ h2{font-size:23px}
+}
+@media screen and (max-width:900px){.layout{grid-template-columns:1fr}.app{width:calc(100% - 16px);padding:5px}.panel{padding:14px}}
+</style></head><body><main class="app"><h1>In đơn COD – FlashLabel A318BT (Smart Paste v7)</h1><p class="hint">Bản thử nghiệm in độc lập, cố định 76 × 130 mm. Nhập hoặc dán thông tin, xem trước rồi in.</p><div class="layout"><section class="panel"><label for="bulk">Dán toàn bộ thông tin khách hàng</label><textarea id="bulk" placeholder="Tên người nhận
+Số điện thoại
+Địa chỉ đầy đủ
+COD: 403000"></textarea><button id="paste" type="button">Dán &amp; tự điền</button><button id="parse" type="button">Phân tích nội dung</button><p id="status" role="status"></p><label for="name">Người nhận</label><input id="name"/><label for="phone">Số điện thoại</label><input id="phone" inputmode="tel"/><label for="address">Địa chỉ người nhận</label><textarea id="address"></textarea><label for="cod">Tiền thu hộ COD (VNĐ)</label><input id="cod" inputmode="numeric"/><button id="print" type="button">🖨 In đơn</button></section><section class="panel"><div class="share-panel"><label for="customerMessage">Tin nhắn xác nhận gửi khách</label><textarea id="customerMessage" readonly></textarea><button type="button" id="copyMessage">📋 Copy tin nhắn gửi khách</button><p class="hint">Nội dung tự đổi theo tên khách trong đơn.</p><button type="button" id="copyImage">🖼 Copy ảnh đơn sắp in</button><button type="button" id="saveImage">⬇ Lưu ảnh PNG</button><p class="hint" id="imageStatus">Ảnh được tạo từ dữ liệu trên tem. Nếu trình duyệt không cho sao chép ảnh, dùng nút Lưu ảnh PNG.</p></div><h2 style="margin-top:20px">Xem trước tem</h2><div class="preview-wrap"><div class="label" id="preview"><div class="heading">ĐƠN GIAO HÀNG – COD</div><div class="field"><b>Người nhận:</b> <span data-field="name"></span></div><div class="field"><b>SĐT:</b> <span data-field="phone"></span></div><div class="field"><b>Địa chỉ:</b> <span class="address" data-field="address"></span></div><div class="cod">COD: <span data-field="cod"></span></div></div></div></section></div></main>
+<!-- Only this isolated node is printed. No app/grid/panel ancestor. -->
+<div aria-hidden="true" id="printSheet"><div class="label"><div class="heading">ĐƠN GIAO HÀNG – COD</div><div class="field"><b>Người nhận:</b> <span data-field="name"></span></div><div class="field"><b>SĐT:</b> <span data-field="phone"></span></div><div class="field"><b>Địa chỉ:</b> <span class="address" data-field="address"></span></div><div class="cod">COD: <span data-field="cod"></span></div></div></div>
+<script>
+const $=id=>document.getElementById(id);const fields=['name','phone','address','cod'];
+function update(){let d={name:$('name').value.trim()||'—',phone:$('phone').value.trim()||'—',address:$('address').value.trim()||'Chưa nhập'};let raw=$('cod').value.replace(/\D/g,'');d.cod=raw?Number(raw).toLocaleString('vi-VN')+' đ':'Chưa nhập';for(const k of fields)document.querySelectorAll('[data-field="'+k+'"]').forEach(el=>el.textContent=d[k]);$('customerMessage').value='Em gửi anh/chị '+($('name').value.trim()||'khách hàng')+' thông tin đơn, khách check lại thông tin giúp shop nha ❤️';}
+function parseBulk(input){
+ const lines=input.replace(/\r/g,'').split(/\n/).map(x=>x.trim()).filter(Boolean);
+ const result={name:'',phone:'',address:'',cod:''};
+ const nameLabel=/^(?:người\s*nhận|tên(?:\s*khách(?:\s*hàng)?)?|khách\s*hàng|họ\s*tên)\s*[:：-]\s*/i;
+ const phoneLabel=/^(?:sđt|sdt|số\s*điện\s*thoại|điện\s*thoại|phone|tel)\s*[:：-]?\s*/i;
+ const addressLabel=/^(?:địa\s*chỉ(?:\s*nhận(?:\s*hàng)?)?|đc|dc|address|giao\s*(?:tại|đến))\s*[:：-]\s*/i;
+ const codLabel=/^(?:COD|thu\s*hộ|tiền\s*thu)\s*[:：=\-]?\s*/i;
+ const phonePattern=/(?:\+?84|0)(?:[ .-]*\d){9}/g;
+ const clean=x=>x.replace(/^[,;\s-]+|[,;\s-]+$/g,'').trim();
+ const findPhone=line=>{
+   for(const m of line.matchAll(phonePattern)){
+     const start=m.index,end=start+m[0].length;
+     if((start>0&&/\d/.test(line[start-1]))||(end<line.length&&/\d/.test(line[end])))continue;
+     const normalized=m[0].replace(/\D/g,'').replace(/^84/,'0');
+     if(/^0\d{9}$/.test(normalized))return {value:normalized,raw:m[0]};
+   }
+   return null;
+ };
+ const leftovers=[];
+ for(const original of lines){
+   let line=original;
+   if(codLabel.test(line)){
+     const token=line.replace(codLabel,'').trim();
+     const match=token.match(/^(\d[\d.,\s]*?)\s*(k|nghìn|ngàn|triệu|tr|đ|vnđ)?\s*$/i);
+     if(match){const n=Number(match[1].replace(/\D/g,''));const mult=/^(k|nghìn|ngàn)$/i.test(match[2]||'')?1000:/^(triệu|tr)$/i.test(match[2]||'')?1000000:1;result.cod=String(n*mult)}
+     continue;
+   }
+   if(nameLabel.test(line)){result.name=clean(line.replace(nameLabel,''));continue}
+   if(addressLabel.test(line)){result.address=clean(line.replace(addressLabel,''));const p=findPhone(result.address);if(p){if(!result.phone)result.phone=p.value;result.address=clean(result.address.replace(p.raw,''))}continue}
+   if(phoneLabel.test(line)){
+     const p=findPhone(line);
+     if(p)result.phone=p.value;
+     const extra=clean(line.replace(phoneLabel,'').replace(p?.raw||'\u0000',''));
+     if(extra)leftovers.push(extra);
+     continue;
+   }
+   const p=findPhone(line);
+   if(p){if(!result.phone)result.phone=p.value;line=clean(line.replace(p.raw,''))}
+   if(line)leftovers.push(line);
+ }
+ // Four-line Smart Paste: name / phone / address / COD. Never copy phone into address.
+ if(!result.name&&leftovers.length){result.name=leftovers.shift()}
+ if(!result.address&&leftovers.length){result.address=leftovers.join(', ')}
+ // Remove a repeated customer phone only when it appears as a standalone address prefix.
+ if(result.phone&&result.address){
+   const escaped=result.phone.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+   result.address=result.address.replace(new RegExp('^'+escaped+'\\s*[,;:-]\\s*'),'').trim();
+ }
+ return result;
+}
+function validateOrder(){
+ const phone=$('phone').value.replace(/\D/g,'').replace(/^84/,'0');
+ const address=$('address').value.trim();
+ const cod=$('cod').value.replace(/\D/g,'');
+ const errors=[];
+ if(!$('name').value.trim())errors.push('thiếu tên người nhận');
+ if(!/^0\d{9}$/.test(phone))errors.push('SĐT phải có đúng 10 chữ số');
+ if(!address)errors.push('thiếu địa chỉ');
+ if(/(?:\+?84|0)(?:[ .-]*\d){9}/.test(address))errors.push('địa chỉ đang chứa chuỗi giống số điện thoại');
+ if(!cod)errors.push('thiếu COD');
+ return errors;
+}
+function applyBulk(){let data=parseBulk($('bulk').value);for(const key of fields)$(key).value=data[key]||'';update();let missing=[['name','tên'],['phone','số điện thoại'],['address','địa chỉ'],['cod','COD']].filter(([key])=>!data[key]).map(x=>x[1]);const errors=validateOrder();$('status').textContent=missing.length?'Cần kiểm tra/bổ sung: '+missing.join(', '):errors.length?'Cảnh báo: '+errors.join('; '):'Smart Paste v7: Đã tách 4 trường hợp lệ. Hãy kiểm tra trước khi in.'}
+function drawLabel(){
+ const canvas=document.createElement('canvas');canvas.width=900;canvas.height=1536;
+ const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,900,1536);ctx.fillStyle='#000';
+ const left=58,right=842;let y=112;
+ ctx.textAlign='center';ctx.font='bold 54px Arial';ctx.fillText('ĐƠN GIAO HÀNG –',450,y);y+=64;ctx.fillText('COD',450,y);ctx.textAlign='left';
+ y+=52;ctx.fillRect(left,y,right-left,5);y+=65;
+ function wrapLine(text,maxWidth,font){ctx.font=font;const words=String(text).split(/\s+/);const lines=[];let line='';for(const word of words){const candidate=line?line+' '+word:word;if(ctx.measureText(candidate).width>maxWidth&&line){lines.push(line);line=word}else{line=candidate}}if(line)lines.push(line);return lines}
+ function field(label,value){ctx.font='bold 43px Arial';const labelWidth=ctx.measureText(label+' ').width;const valueFont='43px Arial';const max=right-left-labelWidth;let lines=wrapLine(value,max,valueFont);ctx.font='bold 43px Arial';ctx.fillText(label,left,y);ctx.font=valueFont;ctx.fillText(lines.shift()||'',left+labelWidth,y);y+=58;for(const line of lines){ctx.fillText(line,left,y);y+=58}y+=12}
+ field('Người nhận:', $('name').value.trim());field('SĐT:', $('phone').value.trim());field('Địa chỉ:', $('address').value.trim());
+ y+=25;ctx.fillRect(left,y,right-left,5);y+=76;ctx.font='bold 61px Arial';const raw=$('cod').value.replace(/\D/g,'');ctx.fillText('COD: '+(raw?Number(raw).toLocaleString('vi-VN')+' đ':''),left,y);
+ return canvas;
+}
+function imageBlob(){return new Promise(resolve=>drawLabel().toBlob(resolve,'image/png'))}
+function checkShare(){const errors=validateOrder();if(errors.length){$('imageStatus').textContent='Chưa thể tạo ảnh: '+errors.join('; ');return false}return true}
+$('copyMessage').addEventListener('click',async()=>{const msg=$('customerMessage').value;try{await navigator.clipboard.writeText(msg);$('status').textContent='Đã copy tin nhắn.'}catch(e){$('customerMessage').focus();$('customerMessage').select();$('status').textContent='Trình duyệt chặn copy tự động. Nhấn Ctrl+C để sao chép.'}});
+$('copyImage').addEventListener('click',async()=>{if(!checkShare())return;try{const blob=await imageBlob();if(!blob||!navigator.clipboard?.write||typeof ClipboardItem==='undefined')throw Error('Clipboard ảnh không khả dụng');await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);$('imageStatus').textContent='Đã copy ảnh PNG. Dán Ctrl+V vào Zalo để gửi khách.'}catch(e){$('imageStatus').textContent='Trình duyệt không cho copy ảnh trực tiếp từ file HTML. Hãy chọn Lưu ảnh PNG rồi gửi ảnh đó qua Zalo.'}});
+$('saveImage').addEventListener('click',async()=>{if(!checkShare())return;const blob=await imageBlob();if(!blob)return;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='Don_COD_'+($('phone').value.replace(/\D/g,'')||'khach')+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);$('imageStatus').textContent='Đã tạo ảnh PNG để lưu và gửi khách.'});
+fields.forEach(id=>$(id).addEventListener('input',update));$('parse').addEventListener('click',applyBulk);$('paste').addEventListener('click',async()=>{try{let t=await navigator.clipboard.readText();$('bulk').value=t;applyBulk()}catch(e){$('bulk').focus();$('status').textContent='Hãy Ctrl+V vào ô rồi nhấn Phân tích nội dung.'}});$('bulk').addEventListener('paste',()=>setTimeout(applyBulk,0));$('print').addEventListener('click',()=>{update();const errors=validateOrder();if(errors.length){$('status').textContent='Chưa thể in: '+errors.join('; ');alert('Vui lòng kiểm tra: '+errors.join('; '));return;}window.print()});window.addEventListener('beforeprint',()=>{update();const errors=validateOrder();if(errors.length){$('status').textContent='KHÔNG IN: '+errors.join('; ');document.querySelector('#printSheet').style.visibility='hidden'}else{document.querySelector('#printSheet').style.visibility='visible'}});window.addEventListener('afterprint',()=>{document.querySelector('#printSheet').style.visibility='visible'});update();
+</script></body></html>
